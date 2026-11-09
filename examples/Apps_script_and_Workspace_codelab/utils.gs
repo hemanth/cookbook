@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 Google LLC
+ * Copyright 2026 Google LLC
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 const properties = PropertiesService.getScriptProperties().getProperties();
 const geminiApiKey = properties['GOOGLE_API_KEY'];
-const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-latest:generateContent?key=${geminiApiKey}`;
-const geminiProVisionEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro-vision-latest:generateContent?key=${geminiApiKey}`;
+const geminiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.7-flash:generateContent?key=${geminiApiKey}`;
 
 const NUM_SLIDES = 3;
 
@@ -91,7 +90,7 @@ const WORKSPACE_TOOLS = {
  ]
 };
 
-function callGemini(prompt, temperature=0) {
+function callGemini(prompt) {
   const payload = {
     "contents": [
       {
@@ -101,10 +100,7 @@ function callGemini(prompt, temperature=0) {
           },
         ]
       }
-    ], 
-    "generationConfig":  {
-      "temperature": temperature,
-    },
+    ],
   };
 
   const options = { 
@@ -126,7 +122,7 @@ function testGemini() {
 }
 
 
-function callGeminiProVision(prompt, image, temperature=0) {
+function callGeminiProVision(prompt, image) {
   const imageData = Utilities.base64Encode(image.getAs('image/png').getBytes());
 
   const payload = {
@@ -144,10 +140,7 @@ function callGeminiProVision(prompt, image, temperature=0) {
           }          
         ]
       }
-    ], 
-    "generationConfig":  {
-      "temperature": temperature,
-    },
+    ],
   };
 
   const options = { 
@@ -156,7 +149,7 @@ function callGeminiProVision(prompt, image, temperature=0) {
     'payload': JSON.stringify(payload)
   };
 
-  const response = UrlFetchApp.fetch(geminiProVisionEndpoint, options);
+  const response = UrlFetchApp.fetch(geminiEndpoint, options);
   const data = JSON.parse(response);
   const content = data["candidates"][0]["content"]["parts"][0]["text"];
   return content;
@@ -170,7 +163,7 @@ function testGeminiVision() {
   console.log(prompt, output);
 }
 
-function callGeminiWithTools(prompt, tools, temperature=0) {
+function callGeminiWithTools(prompt, tools) {
   const payload = {
     "contents": [
       {
@@ -182,9 +175,6 @@ function callGeminiWithTools(prompt, tools, temperature=0) {
       }
     ], 
     "tools" : tools,
-    "generationConfig":  {
-      "temperature": temperature,
-    },    
   };
 
   const options = { 
